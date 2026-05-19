@@ -1,0 +1,55 @@
+name: Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - qa
+      - prod
+
+jobs:
+
+  build-and-deploy:
+
+    runs-on: self-hosted
+
+    env:
+      BLUE_SERVER_IP: ${{ secrets.BLUE_SERVER_IP }}
+      GREEN_SERVER_IP: ${{ secrets.GREEN_SERVER_IP }}
+
+    steps:
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Build Application
+      run: mvn clean package
+
+    - name: SonarQube Analysis
+      run: |
+        mvn sonar:sonar \
+        -Dsonar.projectKey=enterprise-cicd \
+        -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+        -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+    - name: Upload Artifact to Nexus
+      run: |
+        curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
+        --upload-file target/cicd-app-1.0.jar \
+        ${{ secrets.NEXUS_URL }}/repository/prod_cicd_maven_repo/cicd-app-1.0.jar
+
+    - name: Deploy to Blue Environment
+      if: github.ref == 'refs/heads/dev'
+      run: |
+        ./scripts/deploy-blue.sh
+
+    - name: Deploy to Green Environment
+      if: github.ref == 'refs/heads/qa'
+      run: |
+        ./scripts/deploy-green.sh
