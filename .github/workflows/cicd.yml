@@ -42,6 +42,10 @@ jobs:
     - name: Deploy Artifact to Nexus
       run: mvn deploy
 
+    - name: Set Script Permissions
+      run: |
+        chmod +x scripts/*.sh
+
     - name: Deploy to Blue Environment
       if: github.ref == 'refs/heads/dev'
       run: |
