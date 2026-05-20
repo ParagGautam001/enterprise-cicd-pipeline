@@ -27,6 +27,7 @@ jobs:
       with:
         distribution: temurin
         java-version: 17
+        overwrite-settings: false
 
     - name: Build Application
       run: mvn clean package
