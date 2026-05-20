@@ -38,11 +38,8 @@ jobs:
         -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
         -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
-    - name: Upload Artifact to Nexus
-      run: |
-        curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
-        --upload-file target/cicd-app-1.0.jar \
-        ${{ secrets.NEXUS_URL }}/repository/prod_cicd_maven_repo/cicd-app-1.0.jar
+    - name: Deploy Artifact to Nexus
+      run: mvn deploy
 
     - name: Deploy to Blue Environment
       if: github.ref == 'refs/heads/dev'
