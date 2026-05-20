@@ -55,3 +55,18 @@ jobs:
       if: github.ref == 'refs/heads/qa'
       run: |
         ./scripts/deploy-green.sh
+
+  deploy-production:
+    needs: build-and-deploy
+
+    runs-on: self-hosted
+
+    environment:
+      name: production
+
+    if: github.ref == 'refs/heads/prod'
+
+    steps:
+      - name: Production Deployment
+        run: |
+          echo "Production deployment approved"
