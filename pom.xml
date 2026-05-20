@@ -5,6 +5,14 @@
     <artifactId>cicd-app</artifactId>
     <version>1.0</version>
 
+    <distributionManagement>
+    <repository>
+        <id>nexus</id>
+        <name>Nexus Repository</name>
+        <url>http://10.0.10.79:8081/repository/prod_cicd_maven_repo/</url>
+    </repository>
+    </distributionManagement>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
